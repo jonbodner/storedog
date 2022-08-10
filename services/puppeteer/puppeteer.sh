@@ -1,7 +1,7 @@
 #!/bin/bash
 
 checkStoredog() {
-  wget --quiet -O - http://localhost:3000 |grep -qi storedog
+  wget --quiet -O - "$STOREDOG_URL" |grep -qi storedog
 }
 
 printf "\nWaiting for Storedog"
@@ -15,5 +15,5 @@ printf "\nBrowser replay starting.\n\n"
 
 while :
 do
-  node puppeteer.js http://localhost:3000
+  node puppeteer.js "$STOREDOG_URL"
 done
