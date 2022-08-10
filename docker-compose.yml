@@ -121,6 +121,17 @@ services:
       - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
     networks:
       - storedog-net
+  puppeteer:
+    build:
+      context: ./services/puppeteer
+      dockerfile: Dockerfile
+    volumes:
+      - "./services/puppeteer/puppeteer-test.js:/puppeteer.js"
+      - "./services/puppeteer/puppeteer.sh:/puppeteer.sh"
+    environment:
+      - STOREDOG_URL
+      - PUPPETEER_TIMEOUT
+    command: bash puppeteer.sh
 
 volumes:
   redis:
