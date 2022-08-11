@@ -132,6 +132,8 @@ services:
       - STOREDOG_URL
       - PUPPETEER_TIMEOUT
     command: bash puppeteer.sh
+    networks:
+      - storedog-net
 
 volumes:
   redis:
