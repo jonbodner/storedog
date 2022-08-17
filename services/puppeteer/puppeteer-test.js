@@ -13,7 +13,8 @@ const getNewBrowser = async () => {
     const browser = await puppeteer.launch({
         headless: true,
         defaultViewport: null,
-        // executablePath: 'google-chrome-stable',
+        product: 'firefox',
+        executablePath: 'firefox-esr',
         timeout: process.env.PUPPETEER_TIMEOUT || 30000,
         // slowMo: 1000,
         args: [
@@ -225,21 +226,8 @@ const placeOrder = async (page) => {
 
 const mainSession = async () => {
     console.log('Starting session....')
-    // const browser = await getNewBrowser();
+    const browser = await getNewBrowser();
 
-    const browser = await puppeteer.launch({
-        defaultViewport: null,
-        timeout: process.env.PUPPETEER_TIMEOUT || 30000,
-        // slowMo: 1000,
-        args: [
-            // Required for Docker version of Puppeteer
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            // This will write shared memory files into /tmp instead of /dev/shm,
-            // because Docker’s default for /dev/shm is 64MB
-            '--disable-dev-shm-usage',
-        ],
-    });
 
     console.log(await browser.version())
 
@@ -250,94 +238,94 @@ const mainSession = async () => {
 
     console.log(page)
 
-    // try {
-    //     const page = await browser.newPage();
-    //     if (Math.floor(Math.random() * 3) === 0) {
-    //         await page.emulate(choosePhone());
-    //     }
-    //
-    //     await page.setDefaultNavigationTimeout(
-    //         process.env.PUPPETEER_TIMEOUT || 40000
-    //     );
-    //
-    //     // go to home page
-    //     await page.goto(startUrl, { waitUntil: 'domcontentloaded' });
-    //
-    //     let pageTitle = await page.title();
-    //     console.log(`"${pageTitle}" loaded`);
-    //
-    //     let didUserLeave = await randomlyCloseSession(
-    //         browser,
-    //         page,
-    //         skipSessionClose
-    //     );
-    //     if (didUserLeave) {
-    //         return;
-    //     }
-    //
-    //     await goToBags(page);
-    //
-    //     didUserLeave = await randomlyCloseSession(browser, page, skipSessionClose);
-    //     if (didUserLeave) {
-    //         return;
-    //     }
-    //
-    //     await goToProduct(page);
-    //
-    //     didUserLeave = await randomlyCloseSession(browser, page, skipSessionClose);
-    //     if (didUserLeave) {
-    //         return;
-    //     }
-    //
-    //     await addToCart(page);
-    //
-    //     didUserLeave = await randomlyCloseSession(browser, page, skipSessionClose);
-    //     if (didUserLeave) {
-    //         return;
-    //     }
-    //
-    //     await goToCheckout(page);
-    //
-    //     didUserLeave = await randomlyCloseSession(browser, page, skipSessionClose);
-    //     if (didUserLeave) {
-    //         return;
-    //     }
-    //
-    //     await checkoutGuest(page);
-    //
-    //     didUserLeave = await randomlyCloseSession(browser, page, skipSessionClose);
-    //     if (didUserLeave) {
-    //         return;
-    //     }
-    //
-    //     await fillAddress(page);
-    //
-    //     didUserLeave = await randomlyCloseSession(browser, page, skipSessionClose);
-    //     if (didUserLeave) {
-    //         return;
-    //     }
-    //
-    //     await setShippingMethod(page);
-    //
-    //     didUserLeave = await randomlyCloseSession(browser, page, skipSessionClose);
-    //     if (didUserLeave) {
-    //         return;
-    //     }
-    //
-    //     await setPaymentMethod(page);
-    //
-    //     didUserLeave = await randomlyCloseSession(browser, page, skipSessionClose);
-    //     if (didUserLeave) {
-    //         return;
-    //     }
-    //
-    //     await placeOrder(page);
-    //     await page.close();
-    // } catch (err) {
-    //     console.log(`Session failed: ${err}`);
-    // } finally {
-    //     await browser.close();
-    // }
+    try {
+        const page = await browser.newPage();
+        if (Math.floor(Math.random() * 3) === 0) {
+            await page.emulate(choosePhone());
+        }
+
+        await page.setDefaultNavigationTimeout(
+            process.env.PUPPETEER_TIMEOUT || 40000
+        );
+
+        // go to home page
+        await page.goto(startUrl, { waitUntil: 'domcontentloaded' });
+
+        let pageTitle = await page.title();
+        console.log(`"${pageTitle}" loaded`);
+
+        let didUserLeave = await randomlyCloseSession(
+            browser,
+            page,
+            skipSessionClose
+        );
+        if (didUserLeave) {
+            return;
+        }
+
+        await goToBags(page);
+
+        didUserLeave = await randomlyCloseSession(browser, page, skipSessionClose);
+        if (didUserLeave) {
+            return;
+        }
+
+        await goToProduct(page);
+
+        didUserLeave = await randomlyCloseSession(browser, page, skipSessionClose);
+        if (didUserLeave) {
+            return;
+        }
+
+        await addToCart(page);
+
+        didUserLeave = await randomlyCloseSession(browser, page, skipSessionClose);
+        if (didUserLeave) {
+            return;
+        }
+
+        await goToCheckout(page);
+
+        didUserLeave = await randomlyCloseSession(browser, page, skipSessionClose);
+        if (didUserLeave) {
+            return;
+        }
+
+        await checkoutGuest(page);
+
+        didUserLeave = await randomlyCloseSession(browser, page, skipSessionClose);
+        if (didUserLeave) {
+            return;
+        }
+
+        await fillAddress(page);
+
+        didUserLeave = await randomlyCloseSession(browser, page, skipSessionClose);
+        if (didUserLeave) {
+            return;
+        }
+
+        await setShippingMethod(page);
+
+        didUserLeave = await randomlyCloseSession(browser, page, skipSessionClose);
+        if (didUserLeave) {
+            return;
+        }
+
+        await setPaymentMethod(page);
+
+        didUserLeave = await randomlyCloseSession(browser, page, skipSessionClose);
+        if (didUserLeave) {
+            return;
+        }
+
+        await placeOrder(page);
+        await page.close();
+    } catch (err) {
+        console.log(`Session failed: ${err}`);
+    } finally {
+        await browser.close();
+    }
 };
 
 // Session 1
