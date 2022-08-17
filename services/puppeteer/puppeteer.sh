@@ -7,7 +7,7 @@ checkStoredog() {
 printf "\nWaiting for Storedog"
 
 until checkStoredog; do
-  printf .
+  printf "\nWaiting for Storedog... (Please start the frontend container)"
   sleep 2
 done
 
