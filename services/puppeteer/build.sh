@@ -12,4 +12,4 @@ export DOCKER_BUILDKIT=1
 
 
 # Build and tag image
-docker image build -t puppeteer-chrome-linux --progress=plain --tag ddtraining/advertisements-fixed:latest .
+docker image build -t puppeteer-chrome-linux --progress=plain --tag ddtraining/puppeteer:latest .
