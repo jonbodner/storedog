@@ -35,10 +35,15 @@ services:
       - './services/backend:/app'
       - .env:/app/.env
     environment:
-      REDIS_URL: redis://redis:6379/0
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DISABLE_SPRING: 1
+      - REDIS_URL=redis://redis:6379/0
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DISABLE_SPRING=1
+      - DD_SERVICE=web
+      - DD_AGENT_HOST=dd-agent
+      - DD_LOGS_INJECTION=true
+      - DD_TRACE_ANALYTICS_ENABLED=true
+      - DD_PROFILING_ENABLED=true
     networks:
       - storedog-net
   worker:
@@ -54,10 +59,15 @@ services:
       - './services/backend:/app'
       - .env:/app/.env
     environment:
-      REDIS_URL: redis://redis:6379/0
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DISABLE_SPRING: 1
+      - REDIS_URL=redis://redis:6379/0
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DISABLE_SPRING=1
+      - DD_SERVICE=worker
+      - DD_AGENT_HOST=dd-agent
+      - DD_LOGS_INJECTION=true
+      - DD_TRACE_ANALYTICS_ENABLED=true
+      - DD_PROFILING_ENABLED=true
     networks:
       - storedog-net
   ads:

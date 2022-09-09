@@ -80,11 +80,13 @@ gem 'spree_auth_devise'
 gem 'spree_i18n', '>= 5.0'
 gem 'spree_dev_tools', require: false, group: %w[test development]
 
-# Sentry Client
-gem 'sentry-raven'
+# # Sentry Client
+# gem 'sentry-raven'
 
-# Scout Client
-gem 'scout_apm'
+# # Scout Client
+# gem 'scout_apm'
+
+gem 'ddtrace', require: 'ddtrace/auto_instrument'
 
 # Rack CORS Middleware
 gem 'rack-cors'
@@ -102,3 +104,4 @@ gem 'oj'
 
 # Fix SCSS errors with Ruby 3 on MacOS
 gem 'sassc', github: 'sass/sassc-ruby', group: :development
+
