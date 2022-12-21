@@ -1,0 +1,356 @@
+{
+  "containerDefinitions": [
+      {
+          "command": [
+              "flask",
+              "run",
+              "--port=7676",
+              "--host=0.0.0.0"
+          ],
+          "environment": [
+              {
+                  "name": "FLASK_APP",
+                  "value": "ads.py"
+              },
+              {
+                  "name": "FLASK_DEBUG",
+                  "value": "1"
+              },
+              {
+                  "name": "POSTGRES_PASSWORD",
+                  "value": "postgres"
+              },
+              {
+                  "name": "POSTGRES_USER",
+                  "value": "postgres"
+              },
+              {
+                  "name": "POSTGRES_HOST",
+                  "value": "postgres"
+              },
+              {
+                  "name": "DD_SERVICE",
+                  "value": "ads"
+              },
+              {
+                  "name": "DD_AGENT_HOST",
+                  "value": "dd-agent"
+              },
+              {
+                  "name": "DD_LOGS_INJECTION",
+                  "value": "true"
+              },
+              {
+                  "name": "DD_TRACE_ANALYTICS_ENABLED",
+                  "value": "true"
+              },
+              {
+                  "name": "DD_PROFILING_ENABLED",
+                  "value": "true"
+              }
+          ],
+          "essential": true,
+          "image": "public.ecr.aws/x2b9z2t7/storedog/ads:1.0.7",
+          "memory": "512",
+          "name": "ads",
+          "portMappings": [
+              {
+                  "containerPort": 7676,
+                  "hostPort": 7676
+              }
+          ]
+      },
+      {
+          "environment": [
+              {
+                  "name": "DD_API_KEY",
+                  "value": ""
+              },
+              {
+                  "name": "DD_APM_ENABLED",
+                  "value": "true"
+              },
+              {
+                  "name": "DD_APM_NON_LOCAL_TRAFFIC",
+                  "value": "true"
+              },
+              {
+                  "name": "DD_LOGS_ENABLED",
+                  "value": "true"
+              },
+              {
+                  "name": "DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL",
+                  "value": "true"
+              },
+              {
+                  "name": "DD_CONTAINER_EXCLUDE",
+                  "value": "\"name:datadog-agent\""
+              }
+          ],
+          "essential": true,
+          "image": "gcr.io/datadoghq/agent:latest",
+          "memory": "512",
+          "mountPoints": [
+              {
+                  "containerPath": "/var/run/docker.sock",
+                  "sourceVolume": "VarRunDocker_Sock"
+              },
+              {
+                  "containerPath": "/host/proc/",
+                  "sourceVolume": "Proc"
+              },
+              {
+                  "containerPath": "/host/sys/fs/cgroup",
+                  "sourceVolume": "SysFsCgroup"
+              }
+          ],
+          "name": "dd-agent",
+          "portMappings": [
+              {
+                  "containerPort": 8126,
+                  "hostPort": 8126
+              }
+          ]
+      },
+      {
+          "command": [
+              "./my-wrapper-script.sh",
+              "2814"
+          ],
+          "environment": [
+              {
+                  "name": "FLASK_APP",
+                  "value": "discounts.py"
+              },
+              {
+                  "name": "FLASK_DEBUG",
+                  "value": "1"
+              },
+              {
+                  "name": "POSTGRES_PASSWORD",
+                  "value": "postgres"
+              },
+              {
+                  "name": "POSTGRES_USER",
+                  "value": "postgres"
+              },
+              {
+                  "name": "POSTGRES_HOST",
+                  "value": "postgres"
+              },
+              {
+                  "name": "DD_SERVICE",
+                  "value": "discounts"
+              },
+              {
+                  "name": "DD_AGENT_HOST",
+                  "value": "dd-agent"
+              },
+              {
+                  "name": "DD_LOGS_INJECTION",
+                  "value": "true"
+              },
+              {
+                  "name": "DD_TRACE_ANALYTICS_ENABLED",
+                  "value": "true"
+              },
+              {
+                  "name": "DD_PROFILING_ENABLED",
+                  "value": "true"
+              }
+          ],
+          "essential": true,
+          "image": "public.ecr.aws/x2b9z2t7/storedog/discounts:1.0.7",
+          "memory": "512",
+          "name": "discounts",
+          "portMappings": [
+              {
+                  "containerPort": 2814,
+                  "hostPort": 2814
+              },
+              {
+                  "containerPort": 22
+              }
+          ]
+      },
+      {
+          "command": [
+              "yarn",
+              "dev"
+          ],
+          "essential": true,
+          "image": "public.ecr.aws/x2b9z2t7/storedog/frontend:1.0.2",
+          "memory": "512",
+          "name": "frontend",
+          "portMappings": [
+              {
+                  "containerPort": 3000,
+                  "hostPort": 3000
+              }
+          ]
+      },
+      {
+          "dockerLabels": {
+              "com.datadoghq.ad.logs": "[{\"source\": \"nginx\", \"service\": \"nginx\"}]"
+          },
+          "essential": true,
+          "image": "public.ecr.aws/x2b9z2t7/storedog/nginx:1.0.2",
+          "memory": "512",
+          "name": "nginx",
+          "portMappings": [
+              {
+                  "containerPort": 80,
+                  "hostPort": 80
+              }
+          ]
+      },
+      {
+          "dockerLabels": {
+              "com.datadoghq.ad.check_names": "[\"postgres\"]",
+              "com.datadoghq.ad.init_configs": "[{}]",
+              "com.datadoghq.ad.instances": "[{\"host\":\"%%host%%\", \"port\":5432,\"username\":\"datadog\",\"password\":\"datadog\"}]",
+              "com.datadoghq.ad.logs": "[{\"source\":\"postgresql\",\"service\":\"postgresql\"}]"
+          },
+          "environment": [
+              {
+                  "name": "POSTGRES_HOST_AUTH_METHOD",
+                  "value": "trust"
+              }
+          ],
+          "essential": true,
+          "image": "postgres:13-alpine",
+          "memory": "512",
+          "mountPoints": [
+              {
+                  "containerPath": "/var/lib/postgresql/data",
+                  "sourceVolume": "Postgres"
+              }
+          ],
+          "name": "postgres"
+      },
+      {
+          "essential": true,
+          "image": "redis:6.2-alpine",
+          "memory": "512",
+          "mountPoints": [
+              {
+                  "containerPath": "/data",
+                  "sourceVolume": "Redis"
+              }
+          ],
+          "name": "redis"
+      },
+      {
+          "environment": [
+              {
+                  "name": "REDIS_URL",
+                  "value": "redis://redis:6379/0"
+              },
+              {
+                  "name": "DB_HOST",
+                  "value": "postgres"
+              },
+              {
+                  "name": "DB_PORT",
+                  "value": "5432"
+              },
+              {
+                  "name": "DISABLE_SPRING",
+                  "value": "1"
+              }
+          ],
+          "essential": true,
+          "image": "public.ecr.aws/x2b9z2t7/storedog/backend:1.0.7",
+          "memory": "512",
+          "mountPoints": [
+              {
+                  "containerPath": "/bundle",
+                  "sourceVolume": "Bundle_Cache"
+              }
+          ],
+          "name": "web",
+          "portMappings": [
+              {
+                  "containerPort": 4000,
+                  "hostPort": 4000
+              }
+          ]
+      },
+      {
+          "command": [
+              "bundle",
+              "exec",
+              "sidekiq",
+              "-C",
+              "config/sidekiq.yml"
+          ],
+          "environment": [
+              {
+                  "name": "REDIS_URL",
+                  "value": "redis://redis:6379/0"
+              },
+              {
+                  "name": "DB_HOST",
+                  "value": "postgres"
+              },
+              {
+                  "name": "DB_PORT",
+                  "value": "5432"
+              },
+              {
+                  "name": "DISABLE_SPRING",
+                  "value": "1"
+              }
+          ],
+          "essential": true,
+          "image": "public.ecr.aws/x2b9z2t7/storedog/backend:1.0.7",
+          "memory": "512",
+          "mountPoints": [
+              {
+                  "containerPath": "/bundle",
+                  "sourceVolume": "Bundle_Cache"
+              }
+          ],
+          "name": "worker"
+      }
+  ],
+  "family": "",
+  "volumes": [
+      {
+          "host": {
+              "sourcePath": "postgres"
+          },
+          "name": "Postgres"
+      },
+      {
+          "host": {
+              "sourcePath": "redis"
+          },
+          "name": "Redis"
+      },
+      {
+          "host": {
+              "sourcePath": "bundle_cache"
+          },
+          "name": "Bundle_Cache"
+      },
+      {
+          "host": {
+              "sourcePath": "/var/run/docker.sock"
+          },
+          "name": "VarRunDocker_Sock"
+      },
+      {
+          "host": {
+              "sourcePath": "/proc/"
+          },
+          "name": "Proc"
+      },
+      {
+          "host": {
+              "sourcePath": "/sys/fs/cgroup/"
+          },
+          "name": "SysFsCgroup"
+      }
+  ]
+}
