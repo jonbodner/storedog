@@ -134,7 +134,7 @@ Resources:
       AllocatedStorage: 20
   AdvertisementsService:
     DependsOn:
-      - AdvertisementsTCP5002Listener
+      - AdvertisementsTCP9292Listener
       - DBInstance
     Properties:
       Cluster:
@@ -150,9 +150,9 @@ Resources:
       LaunchType: FARGATE
       LoadBalancers:
         - ContainerName: advertisements
-          ContainerPort: 5002
+          ContainerPort: 9292
           TargetGroupArn:
-            Ref: AdvertisementsTCP5002TargetGroup
+            Ref: AdvertisementsTCP9292TargetGroup
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
@@ -192,22 +192,22 @@ Resources:
       NamespaceId:
         Ref: CloudMap
     Type: AWS::ServiceDiscovery::Service
-  AdvertisementsTCP5002Listener:
+  AdvertisementsTCP9292Listener:
     Properties:
       DefaultActions:
         - ForwardConfig:
             TargetGroups:
               - TargetGroupArn:
-                  Ref: AdvertisementsTCP5002TargetGroup
+                  Ref: AdvertisementsTCP9292TargetGroup
           Type: forward
       LoadBalancerArn:
         Ref: LoadBalancer
-      Port: 5002
+      Port: 9292
       Protocol: TCP
     Type: AWS::ElasticLoadBalancingV2::Listener
-  AdvertisementsTCP5002TargetGroup:
+  AdvertisementsTCP9292TargetGroup:
     Properties:
-      Port: 5002
+      Port: 9292
       Protocol: TCP
       Tags:
         - Key: project
@@ -236,7 +236,7 @@ Resources:
             - Name: POSTGRES_USER
               Value: postgres
           Essential: True
-          Image: public.ecr.aws/x2b9z2t7/ddtraining/advertisements-fixed:2.2.0
+          Image: public.ecr.aws/x2b9z2t7/storedog/ads:1.0.9
           LinuxParameters: {}
           LogConfiguration:
             LogDriver: awslogs
@@ -247,8 +247,8 @@ Resources:
                 Ref: AWS::Region
               awslogs-stream-prefix: lab
           PortMappings:
-            - ContainerPort: 5002
-              HostPort: 5002
+            - ContainerPort: 9292
+              HostPort: 9292
               Protocol: tcp
       Cpu: "256"
       ExecutionRoleArn:
@@ -302,15 +302,15 @@ Resources:
       IpProtocol: TCP
       ToPort: 3000
     Type: AWS::EC2::SecurityGroupIngress
-  Default5002Ingress:
+  Default9292Ingress:
     Properties:
       CidrIp: 0.0.0.0/0
-      Description: advertisements:5002/tcp on default network
-      FromPort: 5002
+      Description: advertisements:9292/tcp on default network
+      FromPort: 9292
       GroupId:
         Ref: DefaultNetwork
       IpProtocol: TCP
-      ToPort: 5002
+      ToPort: 9292
     Type: AWS::EC2::SecurityGroupIngress
   DefaultNetwork:
     Properties:
@@ -502,7 +502,7 @@ Resources:
             - Name: ADS_ROUTE
               Value: http://advertisements.lab.local
             - Name: ADS_PORT
-              Value: 5002
+              Value: 9292
             - Name: DISCOUNTS_ROUTE
               Value:
                 Fn::GetAtt:
@@ -513,7 +513,7 @@ Resources:
             - Name: POSTGRES_USER
               Value: postgres
           Essential: True
-          Image: public.ecr.aws/x2b9z2t7/ddtraining/storefront-fixed:2.2.1
+          Image: public.ecr.aws/x2b9z2t7/storedog/frontend:1.0.9
           LinuxParameters: {}
           LogConfiguration:
             LogDriver: awslogs
