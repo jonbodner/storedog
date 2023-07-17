@@ -22,6 +22,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Set default Flask app and development environment
 ENV FLASK_APP=ads.py
 
-# Start the app using ddtrace so we have profiling and tracing
-ENTRYPOINT ["ddtrace-run"]
 CMD flask run --port=9292 --host=0.0.0.0

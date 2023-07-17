@@ -1,6 +1,5 @@
 import s from './ProductSidebar.module.css';
 import { useAddItem } from '@framework/cart';
-import { datadogRum } from '@datadog/browser-rum';
 import { FC, useEffect, useState } from 'react';
 import { ProductOptions } from '@components/product';
 import useCart from '@framework/cart/use-cart';
@@ -35,16 +34,6 @@ const ProductSidebar: FC<ProductSidebarProps> = ({ product, className }) => {
       await addItem({
         productId: String(product.id),
         variantId: String(variant ? variant.id : product.variants[0]?.id),
-      });
-      datadogRum.addAction('Product Added to Cart', {
-        cartTotal: cartData.totalPrice,
-        product: {
-          name: product.name,
-          sku: product.sku,
-          id: product.id,
-          price: product.price.value,
-          slug: product.slug,
-        },
       });
 
       setSidebarView('CART_VIEW');

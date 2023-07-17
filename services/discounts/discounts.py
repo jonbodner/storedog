@@ -16,9 +16,7 @@ from sqlalchemy.orm import joinedload
 from bootstrap import create_app
 from models import Discount, DiscountType, db
 
-from ddtrace import patch; patch(logging=True)
 import logging
-from ddtrace import tracer
 
 FORMAT = ('%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] '
           '[dd.service=%(dd.service)s dd.env=%(dd.env)s dd.version=%(dd.version)s dd.trace_id=%(dd.trace_id)s dd.span_id=%(dd.span_id)s] '
@@ -32,12 +30,10 @@ CORS(app)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Hello world
-@tracer.wrap()
 @app.route('/')
 def hello():
     return Response({'Hello from Discounts!': 'world'}, mimetype='application/json')
 
-@tracer.wrap()
 @app.route('/discount', methods=['GET', 'POST'])
 def status():
     if flask_request.method == 'GET':

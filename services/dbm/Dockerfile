@@ -22,6 +22,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Set default Flask app and development environment
 ENV FLASK_APP=dbm.py
 
-# Start the app using ddtrace so we have profiling and tracing
-ENTRYPOINT ["ddtrace-run"]
 CMD gunicorn --bind 0.0.0.0:7578 dbm:app

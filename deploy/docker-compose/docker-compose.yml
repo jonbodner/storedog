@@ -75,7 +75,6 @@ services:
     image: public.ecr.aws/x2b9z2t7/storedog/ads-java:1.0.8
     environment:
       - DD_SERVICE=ads-java
-      - DD_AGENT_HOST=dd-agent
       - DD_LOGS_INJECTION=true
       - DD_TRACE_ANALYTICS_ENABLED=true
       - DD_PROFILING_ENABLED=true
@@ -95,7 +94,6 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_HOST=postgres
       - DD_SERVICE=discounts
-      - DD_AGENT_HOST=dd-agent
       - DD_LOGS_INJECTION=true
       - DD_TRACE_ANALYTICS_ENABLED=true
       - DD_PROFILING_ENABLED=true

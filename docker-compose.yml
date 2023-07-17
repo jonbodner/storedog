@@ -110,7 +110,6 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_HOST=postgres
       - DD_SERVICE=ads
-      - DD_AGENT_HOST=dd-agent
       - DD_LOGS_INJECTION=true
       - DD_TRACE_ANALYTICS_ENABLED=true
       - DD_PROFILING_ENABLED=true
@@ -139,7 +138,6 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_HOST=postgres
       - DD_SERVICE=discounts
-      - DD_AGENT_HOST=dd-agent
       - DD_LOGS_INJECTION=true
       - DD_TRACE_ANALYTICS_ENABLED=true
       - DD_PROFILING_ENABLED=true
@@ -171,7 +169,6 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_HOST=postgres
       - DD_SERVICE=storedog-auth
-      - DD_AGENT_HOST=dd-agent
       - DD_LOGS_INJECTION=true
       - DD_TRACE_ANALYTICS_ENABLED=true
       - DD_PROFILING_ENABLED=true
@@ -198,7 +195,6 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_HOST=postgres
       - DD_SERVICE=storedog-dbm
-      - DD_AGENT_HOST=dd-agent
       - DD_LOGS_INJECTION=true
       - DD_TRACE_ANALYTICS_ENABLED=true
       - DD_PROFILING_ENABLED=true
@@ -240,7 +236,6 @@ services:
       - dd-agent
     environment:
       - DD_SERVICE=ads-java
-      - DD_AGENT_HOST=dd-agent
       - DD_LOGS_INJECTION=true
       - DD_TRACE_ANALYTICS_ENABLED=true
       - DD_PROFILING_ENABLED=true

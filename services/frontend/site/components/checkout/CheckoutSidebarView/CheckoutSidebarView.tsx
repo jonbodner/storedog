@@ -14,7 +14,6 @@ import PaymentWidget from '../PaymentWidget';
 import s from './CheckoutSidebarView.module.css';
 import { useCheckoutContext } from '../context';
 import useRemoveItem from '@framework/cart/use-remove-item';
-import { datadogRum } from '@datadog/browser-rum';
 
 const onMockCheckout = async () => {
   const sleep = (ms) => {
@@ -57,15 +56,6 @@ const CheckoutSidebarView: FC = () => {
       event.preventDefault();
 
       await onMockCheckout();
-      
-      // Custom RUM action
-      datadogRum.addAction('Successful Checkout', {
-        cartTotal: cartData.totalPrice,
-        createdAt: cartData.createdAt,
-        discounts: cartData.discounts,
-        id: cartData.id,
-        lineItems: cartData.lineItems,
-      });
 
       for (const product of cartData.lineItems) {
         await removeItem(product);
