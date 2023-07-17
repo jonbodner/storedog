@@ -2,16 +2,16 @@
 local-start:
 	if [[ "$(PROFILE)" ]]; then \
 		rm -rf ./services/backend/tmp ./services/backend/log; \
-		docker-compose --profile "$(PROFILE)" up --force-recreate -d; \
+		docker compose --profile "$(PROFILE)" up --force-recreate -d; \
 	else \
 		rm -rf ./services/backend/tmp ./services/backend/log; \
-		docker-compose up --force-recreate -d; \
+		docker compose up --force-recreate -d; \
 	fi
 
 local-stop:
 	if [[ "$(PROFILE)" ]]; then \
-		docker-compose --profile "$(PROFILE)" down; \
+		docker compose --profile "$(PROFILE)" down; \
 	else \
-		docker-compose down; \
+		docker compose down; \
 	fi
 	

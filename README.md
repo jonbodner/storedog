@@ -6,7 +6,7 @@ This a dockerized [Spree Commerce](https://spreecommerce.org) application consum
 
 **1.** Before starting the containers, you will need to define the required env vars. Run the following command to copy the env var template:
 
-`cp .env.template .env && cp .env.template ./deploy/docker-compose/.env && cp .env.template ./services/frontend/site/.env.local`
+`cp .env.template .env && cp .env.template ./deploy/docker compose/.env && cp .env.template ./services/frontend/site/.env.local`
 
 **2.**
 Open the `.env` file under the project root and enter the values for the variables. The default values should all work except for the empty `DD_API_KEY`, which is required to run the DD agent.
@@ -118,7 +118,7 @@ For example: Turning `cart` off will disable Cart capabilities.
 
 - complete the startup steps up under Local Development to number 3
 - in `services/frontend/site/featureFlags.config.json` find the object with `name:dbm` and set `active:true`
-- run `docker-compose --profile dbm up -d`
+- run `docker compose --profile dbm up -d`
 - once all the containers are up, run `docker exec storedog-postgres-1 ./dbm_exec.sh` this will add a few things we need for dbm to the database
 - run `docker restart storedog-postgres-1` to restart the postgres container
 

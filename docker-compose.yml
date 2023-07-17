@@ -6,7 +6,6 @@ services:
     command: yarn dev
     depends_on:
       - worker
-      - dd-agent
     volumes:
       - "./services/frontend/site:/storedog-app/site"
     ports:
@@ -21,16 +20,11 @@ services:
       - "80:80"
     depends_on:
       - frontend
-      - dd-agent
-    labels:
-      com.datadoghq.ad.logs: '[{"source": "nginx", "service": "nginx"}]'
     networks:
       - storedog-net
   postgres:
     image: postgres:13-alpine
     restart: always
-    depends_on: 
-      - dd-agent
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
@@ -39,18 +33,11 @@ services:
       - ./services/backend/db/postgresql.conf:/postgresql.conf
       - ./services/dbm/dbm_setup.sql:/etc/postgresql/13/main/dbm_setup.sql
       - ./services/dbm/dbm_exec.sh:/dbm_exec.sh
-    labels:
-      com.datadoghq.ad.check_names: '["postgres"]'
-      com.datadoghq.ad.init_configs: '[{}]'
-      com.datadoghq.ad.instances: '[{"host":"%%host%%", "port":5432,"username":"datadog","password":"datadog"}]'
-      com.datadoghq.ad.logs: '[{"source":"postgresql","service":"postgresql"}]'
     command: ["postgres", "-c", "config_file=/postgresql.conf"]
     networks:
       - storedog-net
   redis:
     image: redis:6.2-alpine
-    depends_on:
-      - dd-agent
     volumes:
       - 'redis:/data'
     networks:
@@ -59,7 +46,6 @@ services:
     depends_on:
       - 'postgres'
       - 'redis'
-      - 'dd-agent'
     build:
       context: ./services/backend
     ports:
@@ -73,8 +59,6 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
       DISABLE_SPRING: 1
-      DD_APPSEC_ENABLED: 1
-      DD_AGENT_HOST: 172.43.0.1
     networks:
       - storedog-net
   worker:
@@ -82,7 +66,6 @@ services:
       - 'postgres'
       - 'redis'
       - 'web'
-      - 'dd-agent'
     build:
       context: ./services/backend
     command: bundle exec sidekiq -C config/sidekiq.yml
@@ -95,27 +78,17 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
       DISABLE_SPRING: 1
-      DD_APPSEC_ENABLED: 1
-      DD_AGENT_HOST: 172.43.0.1
     networks:
       - storedog-net
   ads:
     depends_on:
       - postgres
-      - dd-agent
     environment:
       - FLASK_APP=ads.py
       - FLASK_DEBUG=1
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_HOST=postgres
-      - DD_SERVICE=ads
-      - DD_LOGS_INJECTION=true
-      - DD_TRACE_ANALYTICS_ENABLED=true
-      - DD_PROFILING_ENABLED=true
-      - DD_APPSEC_ENABLED=true
-      - DD_VERSION=7
-      - DD_ENV=dev
     build:
       context: ./services/ads/python
     command: flask run --port=${ADS_PORT} --host=0.0.0.0 # If using any other port besides the default 9292, overriding the CMD is required
@@ -125,25 +98,15 @@ services:
       - "${ADS_PORT}:${ADS_PORT}"
     networks:
       - storedog-net
-    labels:
-      com.datadoghq.ad.logs: '[{"source": "python", "service": "ads"}]'
   discounts:
     depends_on:
       - postgres
-      - dd-agent
     environment:
       - FLASK_APP=discounts.py
       - FLASK_DEBUG=1
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_HOST=postgres
-      - DD_SERVICE=discounts
-      - DD_LOGS_INJECTION=true
-      - DD_TRACE_ANALYTICS_ENABLED=true
-      - DD_PROFILING_ENABLED=true
-      - DD_APPSEC_ENABLED=true
-      - DD_VERSION=7
-      - DD_ENV=dev
     build:
       context: ./services/discounts
     command: ./my-wrapper-script.sh ${DISCOUNTS_PORT}
@@ -151,15 +114,11 @@ services:
       - ./services/discounts:/app
     ports:
       - "${DISCOUNTS_PORT}:${DISCOUNTS_PORT}"
-      - "22:22"
     networks:
       - storedog-net
-    labels:
-      com.datadoghq.ad.logs: '[{"source": "python", "service": "discounts"}]'
   auth:
     depends_on:
       - postgres
-      - dd-agent
     profiles:
       - csrf
     environment:
@@ -168,11 +127,6 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_HOST=postgres
-      - DD_SERVICE=storedog-auth
-      - DD_LOGS_INJECTION=true
-      - DD_TRACE_ANALYTICS_ENABLED=true
-      - DD_PROFILING_ENABLED=true
-      - DD_APPSEC_ENABLED=true
     build:
       context: ./services/auth
     command: gunicorn --bind 0.0.0.0:${AUTH_PORT} auth:app # If using any other port besides the default 8282, overriding the CMD is required
@@ -185,7 +139,6 @@ services:
   dbm:
     depends_on:
       - postgres
-      - dd-agent
     profiles:
       - dbm
     environment:
@@ -194,11 +147,6 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_HOST=postgres
-      - DD_SERVICE=storedog-dbm
-      - DD_LOGS_INJECTION=true
-      - DD_TRACE_ANALYTICS_ENABLED=true
-      - DD_PROFILING_ENABLED=true
-      - DD_APPSEC_ENABLED=true
     build:
       context: ./services/dbm
     command: gunicorn --bind 0.0.0.0:${DBM_PORT} dbm:app # If using any other port besides the default 8282, overriding the CMD is required
@@ -209,42 +157,46 @@ services:
     networks:
       - storedog-net
   dd-agent:
-    image: gcr.io/datadoghq/agent:latest
+    container_name: dd-agent
+    image: datadog/agent:7
     environment:
       - DD_API_KEY=${DD_API_KEY}
       - DD_APM_ENABLED=true
       - DD_APM_NON_LOCAL_TRAFFIC=true
-      - DD_LOGS_ENABLED=true
-      - DD_HOSTNAME=172.43.0.4
-      - DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true
-      - DD_CONTAINER_EXCLUDE=name datadog-agent
-      - DD_HOSTNAME_TRUST_UTS_NAMESPACE=true
-    ports:
-      - "8126:8126"
+      - DD_LOG_LEVEL=TRACE
+      - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
+      - DD_AC_EXCLUDE=name:datadog-agent
+      - DD_SYSTEM_PROBE_ENABLED=true
+      - DD_PROCESS_AGENT_ENABLED=true
+      - DD_APM_RECEIVER_SOCKET=/opt/datadog/apm/inject/run/apm.socket
+      - DD_DOGSTATSD_SOCKET=/opt/datadog/apm/inject/run/dsd.socket
     volumes:
+      - /opt/datadog/apm:/opt/datadog/apm
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
-      - ./services/backend/db/dd-agent-conf.yaml:/conf.d/postgres.d/conf.yaml
+      - /sys/kernel/debug:/sys/kernel/debug
+    cap_add:
+      - SYS_ADMIN
+      - SYS_RESOURCE
+      - SYS_PTRACE
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+      - IPC_LOCK
+      - CHOWN
+    security_opt:
+      - apparmor:unconfined
     networks:
       storedog-net:
         ipv4_address: 172.43.0.4
   ads-java:
     build:
       context: ./services/ads/java
-    depends_on:
-      - dd-agent
-    environment:
-      - DD_SERVICE=ads-java
-      - DD_LOGS_INJECTION=true
-      - DD_TRACE_ANALYTICS_ENABLED=true
-      - DD_PROFILING_ENABLED=true
     ports:
       - "3030:8080"
     networks:
       - storedog-net
-    labels:
-      com.datadoghq.ad.logs: '[{"source": "java", "service": "ads-java"}]'
   attackbox:
     build:
       context: ./services/attackbox
@@ -262,7 +214,6 @@ services:
     depends_on:
       - web
       - discounts
-      - dd-agent
     networks:
       - storedog-net
 
