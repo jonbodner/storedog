@@ -18,7 +18,7 @@ RUN apt-get clean -qy \
 WORKDIR /app
 
 # install specific version of bundler
-RUN gem install bundler -v 2.2.32
+RUN gem install bundler -v 2.4.10
 
 ENV BUNDLE_GEMFILE=/app/Gemfile \
   BUNDLE_JOBS=20 \
