@@ -20,13 +20,7 @@ WORKDIR /app
 # install specific version of bundler
 RUN gem install bundler -v 2.4.10
 
-ENV BUNDLE_GEMFILE=/app/Gemfile \
-  BUNDLE_JOBS=20 \
-  BUNDLE_PATH=/bundle \
-  BUNDLE_BIN=/bundle/bin \
-  GEM_HOME=/bundle
-ENV PATH="${BUNDLE_BIN}:${PATH}"
-
+ENV BUNDLE_GEMFILE=/app/Gemfile
 
 COPY . .
 
