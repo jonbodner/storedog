@@ -183,7 +183,6 @@ GEM
       devise (>= 2.1.0)
     diff-lcs (1.5.0)
     docile (1.4.0)
-    dogstatsd-ruby (5.5.0)
     doorkeeper (5.5.4)
       railties (>= 5)
     dotenv (2.7.6)
@@ -663,7 +662,6 @@ DEPENDENCIES
   aws-sdk-s3
   bootsnap
   dalli
-  dogstatsd-ruby
   dotenv-rails (~> 2.1, >= 2.1.1)
   font_assets
   google-protobuf (~> 3.0)
