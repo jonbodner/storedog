@@ -6,7 +6,7 @@ This a dockerized [Spree Commerce](https://spreecommerce.org) application consum
 
 **1.** Before starting the containers, you will need to define the required env vars. Run the following command to copy the env var template:
 
-`cp .env.template .env && cp .env.template ./deploy/docker compose/.env && cp .env.template ./services/frontend/site/.env.local`
+`cp .env.template .env && cp .env.template ./deploy/docker-compose/.env && cp .env.template ./services/frontend/site/.env.local`
 
 **2.**
 Open the `.env` file under the project root and enter the values for the variables. The default values should all work except for the empty `DD_API_KEY`, which is required to run the DD agent.
